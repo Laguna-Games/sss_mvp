@@ -72,6 +72,6 @@ bureaucrat contract set-value-with-signature \
     --signature "$SIGNED_MESSAGE"
 ```
 
-Note that this transaction will fail if `--new-value` is set to anything other than the one in the signed
-payload, if `--block-deadline` is set to anything other than the one in the signed payload, or if the
-block deadline has already expired.
+This transaction will fail if `--new-value` is set to anything other than the one in the signed payload,
+if `--block-deadline` is set to anything other than the one in the signed payload, or if the block deadline
+has already expired.
