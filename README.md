@@ -17,6 +17,32 @@ like to set is approved and that they are setting the value before a given block
 for a given payload to `setValueWithSignature`. This is a convenience which allows server implementations to
 forego implementing the serialization logic for messages (which depends on the contracts EIP712 domain separator).
 
+## Setting up your environment
+
+First set up a Python 3 virtual environment. Please use Python > 3.6.
+
+```
+python3 -m venv .bureaucrat
+```
+
+Activate your virtual environment
+
+```
+source .bureaucrat/bin/activate
+```
+
+Install dependencies:
+
+```
+pip install -e ".[dev]"
+```
+
+Compile smart contract:
+
+```
+brownie compile
+```
+
 ## Workflow
 
 Deploy the contract:
