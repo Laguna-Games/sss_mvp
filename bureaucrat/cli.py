@@ -1,6 +1,9 @@
 import argparse
 
 from brownie import network
+from eth_account._utils.signing import sign_message_hash
+import eth_keys
+from hexbytes import HexBytes
 from eip712.messages import EIP712Message
 
 from . import SignatureVerifier
@@ -20,21 +23,17 @@ def sign_message(args: argparse.Namespace) -> None:
     network.connect(args.network)
     signer = network.accounts.load(args.signer, args.password)
     contract = SignatureVerifier.SignatureVerifier(args.address)
-    message_from_contract = contract.get_eip712_hash(
-        args.new_value, args.block_deadline
+    message = contract.get_eip712_hash(args.new_value, args.block_deadline)
+    # Brownie required us to use the EIP712Message class which doesn't make it easy to use the message
+    # hash returned by the contract. I dug into the internals of the brownie "sign_message" code to come
+    # up with this.
+    # See: https://github.com/eth-brownie/brownie/blob/af0be999c348cbba83c9f331da6a3dde96d0e007/brownie/network/account.py#L931
+    eth_private_key = eth_keys.keys.PrivateKey(HexBytes(signer.private_key))
+    message_hash_bytes = HexBytes(message)
+    _, _, _, signed_message_bytes = sign_message_hash(
+        eth_private_key, message_hash_bytes
     )
-    print("From contract:", message_from_contract)
-    message = Payload(
-        _name_="PaperPusher",
-        _version_="0.0.1",
-        _chainId_=80001,
-        _verifyingContract_=args.address,
-        newValue=args.new_value,
-        blockDeadline=args.block_deadline,
-    )
-    signed_message = signer.sign_message(message)
-    print("Message hash:", signed_message.messageHash.hex())
-    print("Signature:", signed_message.signature.hex())
+    print(signed_message_bytes.hex())
 
 
 def main():
