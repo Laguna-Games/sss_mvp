@@ -8,15 +8,29 @@ import "@openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.so
 
 contract SignatureVerifier is EIP712, Ownable {
     uint256 value;
+    uint256 publicValue;
+
+    event PublicValueSet(address indexed setter, uint256 value);
+    event ValueSet(address indexed setter, uint256 value);
 
     constructor(string memory name) EIP712(name, "0.0.1") {}
 
     function setValue(uint256 newValue) external onlyOwner {
         value = newValue;
+        emit ValueSet(msg.sender, newValue);
     }
 
     function getValue() external view returns (uint256) {
         return value;
+    }
+
+    function setPublicValue(uint256 newValue) external {
+        publicValue = newValue;
+        emit PublicValueSet(msg.sender, newValue);
+    }
+
+    function getPublicValue() external view returns (uint256) {
+        return publicValue;
     }
 
     function setValueWithSignature(
@@ -34,6 +48,7 @@ contract SignatureVerifier is EIP712, Ownable {
             "SignatureVerifier: setValueWithSignature -- Block deadline has expired"
         );
         value = newValue;
+        emit ValueSet(msg.sender, newValue);
     }
 
     function getEIP712Hash(uint256 newValue, uint256 blockDeadline)
