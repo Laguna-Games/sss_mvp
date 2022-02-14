@@ -31,7 +31,9 @@ def boolean_argument_type(raw_value: str) -> bool:
 
 
 def bytes_argument_type(raw_value: str) -> bytes:
-    return raw_value.encode()
+    if raw_value == "":
+        return raw_value.encode()
+    return raw_value
 
 
 def get_abi_json(abi_name: str) -> List[Dict[str, Any]]:
